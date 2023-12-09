@@ -3,6 +3,7 @@ package org.example;
 import java.math.BigDecimal;
 
 class Developer {
+    private int id;
     private String name;
     private String specialty;
     private BigDecimal salary;
@@ -25,8 +26,8 @@ class Developer {
         return salary;
     }
 
-    @Override
-    public String toString() {
-        return "Developer: " + "\n" + "name: " + name + "\n" + "specialty: " + specialty + "\n" + "salary: " + salary + "\n" + '}';
+
+    public int getId() {
+        return id;
     }
 }
