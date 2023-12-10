@@ -3,6 +3,7 @@ package org.example;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class Test {
@@ -27,7 +28,8 @@ public class Test {
             System.out.println("Выберите функционал:" + "\n"
                     + "(1)Вывести информацию о работниках " + "\n"
                     + "(2)Добавить работников " + "\n"
-                    + "(3)Удаление работника" + "\n");
+                    + "(3)Удаление работника" + "\n"
+                    + "(4)Сортировать по критериям");
 
             int num = scanner.nextInt();
             scanner.nextLine();
@@ -77,8 +79,16 @@ public class Test {
                     } catch (IndexOutOfBoundsException ex) {
                         System.out.println("Ошибка. Некорректный индекс");
                     }
+                case 4:
+                    System.out.println("Выберите критерий сортировки:" + "\n"
+                            + "(1) По имени" + "\n"
+                            + "(2) По специальности" + "\n"
+                            + "(3) По зарплате");
 
-                    //TODO Место для последующего функционала, пока не придумал)))
+                    int sortBy = scanner.nextInt();
+                    sortEmployee(sortBy);
+                    break;
+
             }
         } catch (SQLException sqlEx) {
             sqlEx.printStackTrace();
@@ -108,10 +118,9 @@ public class Test {
         }
     }
 
-    public static void printEmployee(ArrayList<Developer> developers) throws SQLException {
+    public static ArrayList<Developer> printEmployee(ArrayList<Developer> developers) throws SQLException {
         System.out.println("Информация о работниках: \n");
         while (RS.next()) {
-            int id = RS.getInt("id");
             String name = RS.getString("name");
             String specialty = RS.getString("specialty");
             BigDecimal salary = RS.getBigDecimal("salary");
@@ -127,7 +136,7 @@ public class Test {
             );
             i++;
         }
-
+        return developers;
     }
 
     public static void addEmployeeFromDatabase(Developer developer) throws SQLException {
@@ -157,6 +166,39 @@ public class Test {
             System.out.println("Разработчик с указанным ID не найден в базе данных.");
         }
     }
+    public static void sortEmployee(int count) throws SQLException {
+        String sortQuery;
+        switch (count) {
+            case 1:
+                sortQuery = "SELECT * FROM developers ORDER BY name";
+                break;
+            case 2:
+                sortQuery = "SELECT * FROM developers ORDER BY specialty";
+                break;
+            case 3:
+                sortQuery = "SELECT * FROM developers ORDER BY salary";
+                break;
+            default:
+                throw new IllegalArgumentException("Некорректный критерий сортировки");
+        }
 
+        try (Connection connection = DriverManager.getConnection(DATABASE_URL, USER, PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(sortQuery);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.println("Список отсортирован!");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String specialty = resultSet.getString("specialty");
+                BigDecimal salary = resultSet.getBigDecimal("salary");
+
+                System.out.println("Id: " + id + "\n" +
+                        "Имя: " + name + "\n" +
+                        "Специальность: " + specialty + "\n" +
+                        "Зарплата: " + salary + "\n");
+            }
+        }
+    }
 
 }
