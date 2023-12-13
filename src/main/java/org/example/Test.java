@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Test {
@@ -84,7 +85,6 @@ public class Test {
                             + "(1) По имени" + "\n"
                             + "(2) По специальности" + "\n"
                             + "(3) По зарплате");
-
                     int sortBy = scanner.nextInt();
                     sortEmployee(sortBy);
                     break;
@@ -167,16 +167,27 @@ public class Test {
         }
     }
     public static void sortEmployee(int count) throws SQLException {
+        String sortOrder = "ASC"; // По умолчанию сортируем по возрастанию
+
+        System.out.println("Сортировку \n" +
+                "(1) По убыванию \n" +
+                "(2) По возрастанию");
+        Scanner scanner = new Scanner(System.in);
+        int sortDirection = scanner.nextInt();
+        if (sortDirection == 1) {
+            sortOrder = "DESC";
+        }
+
         String sortQuery;
         switch (count) {
             case 1:
-                sortQuery = "SELECT * FROM developers ORDER BY name";
+                sortQuery = "SELECT * FROM developers ORDER BY name " + sortOrder;
                 break;
             case 2:
-                sortQuery = "SELECT * FROM developers ORDER BY specialty";
+                sortQuery = "SELECT * FROM developers ORDER BY specialty " + sortOrder;
                 break;
             case 3:
-                sortQuery = "SELECT * FROM developers ORDER BY salary";
+                sortQuery = "SELECT * FROM developers ORDER BY salary " + sortOrder;
                 break;
             default:
                 throw new IllegalArgumentException("Некорректный критерий сортировки");
